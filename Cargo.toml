@@ -1,0 +1,8 @@
+[package]
+name = "rustsynth"
+version = "0.1.0"
+authors = ["Ole Martin Bjørndalen <ombdalen@gmail.com>"]
+
+[dependencies]
+riff-wave = "0.1.2"
+

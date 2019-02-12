@@ -3,8 +3,7 @@ extern crate riff_wave;
 mod audio;
 
 struct Osc {
-    freq: f64,  // Hz.
-    amp: f64,  // 0..1
+    note: f64,  // Fractional MIDI note.
     phase: f64,  // 0..1
 }
 
@@ -12,21 +11,44 @@ fn saw(phase: f64) -> f64 {
     1.0 - phase * 2.0
 }
 
-fn inc_phase(phase: f64, freq: f64, elapsed_time: f64) -> f64 {
-    (phase + freq * elapsed_time).fract()}
+fn square(phase: f64) -> f64 {
+    if phase < 0.5 {
+        1.0
+    } else {
+        -1.0
+    }
+}
+
+// Convert fractional MIDI note to frequency.
+fn to_freq(note: f64) -> f64 {
+    // MIDI note 69 is exactly 440Hz.
+    // Use this as a base.
+    440.0 * (2.0 as f64).powf((note - 69.0) / 12.0)
+}
+
+fn inc_phase(osc: &mut Osc, elapsed_time: f64) {
+    osc.phase = (osc.phase + to_freq(osc.note) * elapsed_time).fract()
+}
+
 
 fn main() {
     let sample_rate = 44100;
     let elapsed_time = 1.0 / sample_rate as f64;
-    let mut osc = Osc{freq: 440.0, amp: 1.0, phase: 0.0};
+    let mut osc1 = Osc{note: 60.0, phase: 0.0};
+    let mut osc2 = Osc{note: 24.0, phase: 0.0};
     let mut samples = Vec::new();
 
-    for n in 0..44100 {
-        if n > 0 && n % 8000 == 0 {
-            osc.freq /= 2.0;
+    for _ in 0..8 {
+        for note in [60.0, 72.0, 60.0, 69.0, 60.0, 67.0, 60.0, 69.0].iter() {
+            osc1.note = *note;
+            osc2.note = *note + 7.0 + 0.05;
+
+            for _ in 0..5000 {
+                samples.push(saw(osc1.phase) + square(osc2.phase) * 0.3);
+                inc_phase(&mut osc1, elapsed_time);
+                inc_phase(&mut osc2, elapsed_time);
+            }
         }
-        samples.push(saw(osc.phase) * osc.amp);
-        osc.phase = inc_phase(osc.phase, osc.freq, elapsed_time);
     }
 
     audio::save_samples(&String::from("out.wav"), &samples);

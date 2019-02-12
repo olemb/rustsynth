@@ -1,6 +1,6 @@
 extern crate riff_wave;
     
-mod audio;
+mod audiofile;
 
 struct Osc {
     note: f64,  // Fractional MIDI note.
@@ -54,5 +54,5 @@ fn main() {
         }
     }
 
-    audio::save_samples(&String::from("out.wav"), &samples);
+    audiofile::save_samples(&String::from("out.wav"), &samples);
 }

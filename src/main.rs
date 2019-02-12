@@ -1,9 +1,6 @@
 extern crate riff_wave;
-
-use std::fs::File;
-use std::io::BufWriter;
-
-use riff_wave::{WaveWriter, WriteResult};
+    
+mod audio;
 
 struct Osc {
     freq: f64,  // Hz.
@@ -16,35 +13,21 @@ fn saw(phase: f64) -> f64 {
 }
 
 fn inc_phase(phase: f64, freq: f64, elapsed_time: f64) -> f64 {
-    (phase + freq * elapsed_time).fract()
-}
+    (phase + freq * elapsed_time).fract()}
 
-fn write_file() -> WriteResult<()> {
+fn main() {
     let sample_rate = 44100;
-    let elapsed_time = 1.0 / 44100 as f64;
+    let elapsed_time = 1.0 / sample_rate as f64;
     let mut osc = Osc{freq: 440.0, amp: 1.0, phase: 0.0};
-
-    let file = File::create("out.wav")?;
-    let writer = BufWriter::new(file);
-    let mut wave_writer = WaveWriter::new(2, sample_rate, 16, writer)?;
+    let mut samples = Vec::new();
 
     for n in 0..44100 {
-        // TODO: proper conversion.
-        let sample = (saw(osc.phase) * osc.amp * 32000.0) as i16;
-
         if n > 0 && n % 8000 == 0 {
             osc.freq /= 2.0;
         }
-
-        // Just write the same sample for both channels.
-        try!(wave_writer.write_sample_i16(sample));
-        try!(wave_writer.write_sample_i16(sample));
+        samples.push(saw(osc.phase) * osc.amp);
         osc.phase = inc_phase(osc.phase, osc.freq, elapsed_time);
     }
 
-    Ok(())
-}
-
-fn main() {
-    write_file().unwrap();
+    audio::save_samples(&String::from("out.wav"), &samples);
 }

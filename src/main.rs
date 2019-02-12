@@ -11,6 +11,7 @@ fn saw(phase: f64) -> f64 {
     1.0 - phase * 2.0
 }
 
+/*
 fn square(phase: f64) -> f64 {
     if phase < 0.5 {
         1.0
@@ -18,6 +19,7 @@ fn square(phase: f64) -> f64 {
         -1.0
     }
 }
+*/
 
 // Convert fractional MIDI note to frequency.
 fn to_freq(note: f64) -> f64 {
@@ -40,11 +42,12 @@ fn main() {
 
     for _ in 0..8 {
         for note in [60.0, 72.0, 60.0, 69.0, 60.0, 67.0, 60.0, 69.0].iter() {
-            osc1.note = *note;
-            osc2.note = *note + 7.0 + 0.05;
+            let transposed_note = *note - 12.0;
+            osc1.note = transposed_note;
+            osc2.note = transposed_note + 0.01;
 
-            for _ in 0..5000 {
-                samples.push((saw(osc1.phase) + square(osc2.phase)) * 0.3);
+            for _ in 0..10000 {
+                samples.push((saw(osc1.phase) + saw(osc2.phase)) * 0.3);
                 inc_phase(&mut osc1, elapsed_time);
                 inc_phase(&mut osc2, elapsed_time);
             }

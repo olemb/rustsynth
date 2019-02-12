@@ -54,5 +54,5 @@ fn main() {
         }
     }
 
-    audiofile::save_samples(&String::from("out.wav"), &samples);
+    audiofile::save_samples("out.wav", &samples);
 }

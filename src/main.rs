@@ -44,7 +44,7 @@ fn main() {
             osc2.note = *note + 7.0 + 0.05;
 
             for _ in 0..5000 {
-                samples.push(saw(osc1.phase) + square(osc2.phase) * 0.3);
+                samples.push((saw(osc1.phase) + square(osc2.phase)) * 0.3);
                 inc_phase(&mut osc1, elapsed_time);
                 inc_phase(&mut osc2, elapsed_time);
             }

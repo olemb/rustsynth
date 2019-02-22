@@ -1,8 +1,7 @@
 use std::fs::File;
 use std::io::BufWriter;
 
-use riff_wave::{WaveWriter};  // , WriteResult};
-
+use riff_wave::WaveWriter; // , WriteResult};
 
 fn encode_sample(sample: &f64) -> i16 {
     (sample * 32000.0) as i16

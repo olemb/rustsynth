@@ -1,10 +1,10 @@
 extern crate riff_wave;
-    
+
 mod audiofile;
 
 struct Osc {
     note: f64,  // Fractional MIDI note.
-    phase: f64,  // 0..1
+    phase: f64, // 0..1
 }
 
 fn saw(phase: f64) -> f64 {
@@ -32,12 +32,17 @@ fn inc_phase(osc: &mut Osc, elapsed_time: f64) {
     osc.phase = (osc.phase + to_freq(osc.note) * elapsed_time).fract()
 }
 
-
 fn main() {
     let sample_rate = 44100;
     let elapsed_time = 1.0 / sample_rate as f64;
-    let mut osc1 = Osc{note: 60.0, phase: 0.0};
-    let mut osc2 = Osc{note: 24.0, phase: 0.0};
+    let mut osc1 = Osc {
+        note: 60.0,
+        phase: 0.0,
+    };
+    let mut osc2 = Osc {
+        note: 24.0,
+        phase: 0.0,
+    };
     let mut samples = Vec::new();
 
     for _ in 0..8 {
